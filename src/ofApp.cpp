@@ -3,8 +3,9 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 	grabber1.initGrabber(vW,vH);
-	grabber1.initGrabber(vW,vH);
-	remoteVideo.allocate(2*vW,vH,GL_RGB);
+	grabber2.initGrabber(vW,vH);
+	texture1.allocate(vW,vH,GL_RGB);
+	texture2.allocate(vW,vH,GL_RGB);
 
 	// to run this example sending data from different applications or computers
 	// set the ports to be different in the client and server, but matching the client
@@ -51,7 +52,7 @@ void ofApp::setup(){
 	server.addVideoChannel(5000,640,480,30);
 	server.addAudioChannel(6000);
 */
-	gui.setup("","settings.xml",660,10);
+	gui.setup("Awesome Gui","settings.xml",660,10);
 	gui.add(client1.parameters);
 	gui.add(client2.parameters);
 	//gui.add(server.parameters);
@@ -63,6 +64,7 @@ void ofApp::setup(){
 	client2.play();
 	//server.play();
 
+    ofSetFrameRate(15);
 	ofBackground(255);
 }
 
@@ -82,11 +84,11 @@ void ofApp::update(){
 	client1.update();
 	client2.update();
 	if(client1.isFrameNewVideo()){
-		remoteVideo.loadData(client1.getPixelsVideo());
+		texture1.loadData(client1.getPixelsVideo());
 	}
 
 	if(client2.isFrameNewVideo()){
-		remoteVideo.loadData(client2.getPixelsVideo());
+		texture2.loadData(client2.getPixelsVideo());
 	}
 }
 
@@ -96,8 +98,10 @@ void ofApp::draw(){
 	//remoteVideo.draw(0,0);
 
 	//K, first 2 numbers are location on the canvas, next 2 are the crop size, 2 are position out of the image to crop at.
-	remoteVideo.drawSubsection(0,0, 640, 480, mouseX, mouseY);
+	texture1.drawSubsection(0,0, 640, 480, mouseX, mouseY);
+	texture2.drawSubsection(640,0, 640, 480, mouseX, mouseY);
 	grabber1.draw(400,300,240,180);
+	grabber2.draw(400,300,240,180);
 	gui.draw();
 }
 

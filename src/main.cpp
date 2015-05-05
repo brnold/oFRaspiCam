@@ -5,6 +5,9 @@
 //========================================================================
 int main( ){
 
+    ofSetLogLevel(OF_LOG_VERBOSE);
+
+
 	ofAppGlutWindow window; // create a window
 	ofSetupOpenGL(&window, 640+300+640,480,OF_WINDOW);			// <-------- setup the GL context
 
