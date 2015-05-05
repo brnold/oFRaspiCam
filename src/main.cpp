@@ -9,7 +9,7 @@ int main( ){
 
 
 	ofAppGlutWindow window; // create a window
-	ofSetupOpenGL(&window, 640+300+640,480,OF_WINDOW);			// <-------- setup the GL context
+	ofSetupOpenGL(&window, 640+300+640,480+250,OF_WINDOW);			// <-------- setup the GL context
 
 	// this kicks off the running of my app
 	// can be OF_WINDOW or OF_FULLSCREEN

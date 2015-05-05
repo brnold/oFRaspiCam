@@ -22,8 +22,11 @@ class ofApp : public ofBaseApp{
 
 	public:
 
-	    int vW = 1280;
-	    int vH = 720;
+	    int vW = 1920;
+	    int vH = 1080;
+	    int cropSizeX = 640;
+	    int cropSizeY = 480;
+	    int cropPositionX, cropPositionY;
 		void setup();
 		void update();
 		void draw();

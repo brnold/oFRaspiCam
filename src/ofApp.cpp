@@ -52,7 +52,7 @@ void ofApp::setup(){
 	server.addVideoChannel(5000,640,480,30);
 	server.addAudioChannel(6000);
 */
-	gui.setup("Awesome Gui","settings.xml",660,10);
+	gui.setup("Awesome Gui","settings.xml",640+640+20,10);
 	gui.add(client1.parameters);
 	gui.add(client2.parameters);
 	//gui.add(server.parameters);
@@ -64,8 +64,8 @@ void ofApp::setup(){
 	client2.play();
 	//server.play();
 
-    ofSetFrameRate(15);
-	ofBackground(255);
+    ofSetFrameRate(75);
+	ofBackground(155);
 }
 
 
@@ -97,9 +97,23 @@ void ofApp::draw(){
 	ofSetColor(255);
 	//remoteVideo.draw(0,0);
 
+    //calculate the proper cropping location
+    cropPositionX = vW-mouseX*2;
+    cropPositionY = vH-mouseY*2;
+    if(cropPositionX < 0){
+        cropPositionX = 0;
+    }else if(cropPositionX > vW-cropSizeX){
+        cropPositionX = vW-cropSizeX;
+    }
+    if (cropPositionY < 0){
+        cropPositionY = 0;
+    }else if(cropPositionY > vH- cropSizeY){
+        cropPositionY = vH- cropSizeY;
+    }
+
 	//K, first 2 numbers are location on the canvas, next 2 are the crop size, 2 are position out of the image to crop at.
-	texture1.drawSubsection(0,0, 640, 480, mouseX, mouseY);
-	texture2.drawSubsection(640,0, 640, 480, mouseX, mouseY);
+	texture1.drawSubsection(0,0, cropSizeX, cropSizeY, cropPositionX, cropPositionY);
+	texture2.drawSubsection(cropSizeX,0, cropSizeX, cropSizeY, cropPositionX, cropPositionY);
 	grabber1.draw(400,300,240,180);
 	grabber2.draw(400,300,240,180);
 	gui.draw();
