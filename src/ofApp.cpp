@@ -2,8 +2,9 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-	grabber.initGrabber(vW,vH);
-	remoteVideo.allocate(vW,vH,GL_RGB);
+	grabber1.initGrabber(vW,vH);
+	grabber1.initGrabber(vW,vH);
+	remoteVideo.allocate(2*vW,vH,GL_RGB);
 
 	// to run this example sending data from different applications or computers
 	// set the ports to be different in the client and server, but matching the client
@@ -72,15 +73,20 @@ void ofApp::exit(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-	grabber.update();
+	grabber1.update();
+	grabber2.update();
 	//if(grabber.isFrameNew()){
 	//	server.newFrame(grabber.getPixelsRef());
 	//}
 
 	client1.update();
-	if(client.isFrameNewVideo()){
+	client2.update();
+	if(client1.isFrameNewVideo()){
 		remoteVideo.loadData(client1.getPixelsVideo());
+	}
 
+	if(client2.isFrameNewVideo()){
+		remoteVideo.loadData(client2.getPixelsVideo());
 	}
 }
 
@@ -91,7 +97,7 @@ void ofApp::draw(){
 
 	//K, first 2 numbers are location on the canvas, next 2 are the crop size, 2 are position out of the image to crop at.
 	remoteVideo.drawSubsection(0,0, 640, 480, mouseX, mouseY);
-	grabber.draw(400,300,240,180);
+	grabber1.draw(400,300,240,180);
 	gui.draw();
 }
 

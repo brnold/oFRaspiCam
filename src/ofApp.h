@@ -22,8 +22,8 @@ class ofApp : public ofBaseApp{
 
 	public:
 
-	    int vW = 1920;
-	    int vH = 1080;
+	    int vW = 320;
+	    int vH = 240;
 		void setup();
 		void update();
 		void draw();
@@ -42,7 +42,7 @@ class ofApp : public ofBaseApp{
 		ofxGstRTPClient client1, client2;
 		//ofxGstRTPServer server;
 
-		ofVideoGrabber grabber;
+		ofVideoGrabber grabber1, grabber2;
 		ofTexture remoteVideo;
 
 		ofxPanel gui;
