@@ -2,33 +2,22 @@
  * ofApp.h
  *
  *  Created on: Jul 19, 2013
- *      Author: arturo castro
+ *      Author: Benjamin Nold
  */
 
 #pragma once
 
 #include "ofMain.h"
-#include "ofxGstRTPClient.h"
-#include "ofxGstRTPServer.h"
-#include "ofxGui.h"
+//#include "ofxGui.h"
 
-#define DO_ECHO_CANCEL 0
 
-#if DO_ECHO_CANCEL
-#include "ofxEchoCancel.h"
-#endif
-
- #define STATIC_IMAGE 1
+#define STATIC_IMAGE 1
 
 class ofApp : public ofBaseApp{
 
 	public:
 
-	    int vW = 1920;
-	    int vH = 1080;
-	    int cropSizeX = 640;
-	    int cropSizeY = 480;
-	    int cropPositionX, cropPositionY;
+
 		void setup();
 		void update();
 		void draw();
@@ -44,18 +33,15 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
-		ofxGstRTPClient client1, client2;
-		//ofxGstRTPServer server;
 
+		ofSpherePrimitive sphere;
 
-		ofVideoGrabber grabber1, grabber2;
-		ofTexture texture1, texture2;
-		ofImage ofLogo;
+		
+	
+	ofCamera cam; // add mouse controls for camera movement
+	float extrusionAmount;
+	ofVboMesh mainMesh;
+	//ofVideoGrabber vidGrabber;
+	ofImage image;
 
-		ofxPanel gui;
-
-		ofEasyCam cam;		
-#if DO_ECHO_CANCEL
-		ofxEchoCancel echoCancel;
-#endif
 };

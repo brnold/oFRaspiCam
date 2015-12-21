@@ -2,156 +2,125 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-	
+
 	ofSetVerticalSync(true);
+	ofSetFrameRate(60);
+	ofBackground(66,66,66);
+
+	image.loadImage("small.jpg");
 	
-	// this uses depth information for occlusion
-	// rather than always drawing things on top of each other
-	ofEnableDepthTest();
+	//initialize the video grabber
+	//image.setVerbose(true);
+	//image.initGrabber(320,240);
+
+	//store the width and height for convenience
+	int width = image.getWidth();
+	int height = image.getHeight();
 	
-	// this sets the camera's distance from the object
-	cam.setDistance(10000);
-
-	//for the cameras
-	grabber1.initGrabber(vW,vH);
-	grabber2.initGrabber(vW,vH);
-		
-	
-	texture1.allocate(vW,vH,GL_RGB);
-	texture2.allocate(vW,vH,GL_RGB);
-	ofLogo.loadImage("of.png");
-
-	// to run this example sending data from different applications or computers
-	// set the ports to be different in the client and server, but matching the client
-	// and server ports from one app to the other, for example one computer will have:
-	//
-	// client video: 5000
-	// client audio: 6000
-	// server video: 7000
-	// server audio: 8000
-	//
-	// the other:
-	//
-	// client video: 7000
-	// client audio: 8000
-	// server video: 5000
-	// server audio: 6000
-	//
-	// port numbers have to be even according to the standard and have to be separated by at least
-	// 4 numbers since internally rtp uses the next 2 odd port numbers for communicating stats
-	// of the network state through rctp, so if we set 5000 for video internally it'll use
-	// also 5001 and 5003
-
-
-#if DO_ECHO_CANCEL
-	// if echo cancel is enabled we need to setup the echo cancel module and pass it to
-	// the server and client, also the server needs a reference to the client in order to now
-	// the audio latency to be able to remove the echo
-	echoCancel.setup();
-	client.setEchoCancel(echoCancel);
-	server.setEchoCancel(echoCancel);
-	server.setRTPClient(client);
-#endif
-
-	// this sets the remote ip and the latency, in a LAN you can usually use latency 0
-	// over internet you'll probably need to make it higher, around 200 is usually a good
-	// number but depends on the network conditions
-	if(!STATIC_IMAGE){
-	client1.setup(10);
-	client1.addVideoChannel(5004);
-	client2.setup(10);
-	client2.addVideoChannel(6000);
+	//add one vertex to the mesh for each pixel
+	for (int y = 0; y < height; y++){
+		for (int x = 0; x<width; x++){
+			mainMesh.addVertex(ofPoint(x,y,0));	// mesh index = x + y*width
+												// this replicates the pixel array within the camera bitmap...
+			mainMesh.addColor(ofFloatColor(0,0,0));  // placeholder for colour data, we'll get this from the camera
+		}
 	}
-	//client.addAudioChannel(6000);
-/* 
-	server.setup("127.0.0.1");
-	server.addVideoChannel(5000,640,480,30);
-	server.addAudioChannel(6000);
-*/
-	gui.setup("Awesome Gui","settings.xml",640+640+20,10);
-	gui.add(client1.parameters);
-	gui.add(client2.parameters);
-	//gui.add(server.parameters);
-#if DO_ECHO_CANCEL
-	gui.add(echoCancel.parameters);
-#endif
-
-	if(!STATIC_IMAGE){
-	client1.play();
-	client2.play();
+	
+	for (int y = 0; y<height-1; y++){
+		for (int x=0; x<width-1; x++){
+			mainMesh.addIndex(x+y*width);				// 0
+			mainMesh.addIndex((x+1)+y*width);			// 1
+			mainMesh.addIndex(x+(y+1)*width);			// 10
+			
+			mainMesh.addIndex((x+1)+y*width);			// 1
+			mainMesh.addIndex((x+1)+(y+1)*width);		// 11
+			mainMesh.addIndex(x+(y+1)*width);			// 10
+		}
 	}
-	//server.play();
+	
+	//this is an annoying thing that is used to flip the camera
+	cam.setScale(1,-1,0.4);
 
-    ofSetFrameRate(75);
-	ofBackground(155);
+
+	sphere.setRadius(140);
+	
+	//this determines how much we push the meshes out
+	extrusionAmount = 1;
 }
-
-
-void ofApp::exit(){
-}
-
 
 //--------------------------------------------------------------
 void ofApp::update(){
-
-
-	grabber1.update();
-	grabber2.update();
-	//if(grabber.isFrameNew()){
-	//	server.newFrame(grabber.getPixelsRef());
-	//}
-
-	client1.update();
-	client2.update();
+	//grab a new frame
+	//image.update();
 	
-	if(!STATIC_IMAGE){
-	if(client1.isFrameNewVideo()){
-		texture1.loadData(client1.getPixelsVideo());
-	}
+	//update the mesh if we have a new frame
+	if (true){
+		//this determines how far we extrude the mesh
+		for (int i=0; i<image.getWidth()*image.getHeight(); i++){
 
-	if(client2.isFrameNewVideo()){
-		texture2.loadData(client2.getPixelsVideo());
+			ofFloatColor sampleColor(image.getPixels()[i*3]/255.f,				// r
+									 image.getPixels()[i*3+1]/255.f,			// g
+									 image.getPixels()[i*3+2]/255.f);			// b
+			
+			//now we get the vertex aat this position
+			//we extrude the mesh based on it's brightness
+			ofVec3f tmpVec = mainMesh.getVertex(i);
+			tmpVec.z = sampleColor.getBrightness() * extrusionAmount;
+			mainMesh.setVertex(i, tmpVec);
+
+			mainMesh.setColor(i, sampleColor);
+		}
 	}
-	}else{
-		texture1.loadData(ofLogo.getPixels());
-		texture1.loadData(ofLogo.getPixels());
-	}
+	
+	//let's move the camera when you move the mouse
+	float rotateAmount = ofMap(ofGetMouseX(), 0, ofGetWidth()-100, -180, 180);
+
+	
+	//move the camera around the mesh
+	ofVec3f camDirection(0,0.4,1);
+	ofVec3f centre(image.getWidth()/2.f,image.getHeight()/2.f, 255/2.f);
+	ofVec3f camDirectionRotated = camDirection.rotated(rotateAmount, ofVec3f(1,0,0));
+	ofVec3f camPosition = centre + camDirectionRotated * extrusionAmount;
+	//ofVec3f camPosition = centre * extrusionAmount;
+	
+
+	cam.setPosition(camPosition);
+	cam.lookAt(centre);
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+	//we have to disable depth testing to draw the video frame
+	//ofDisableDepthTest();
+//	image.draw(20,20);
+	
+	//but we want to enable it to show the mesh
+	ofEnableDepthTest();
+	sphere.setPosition(ofGetWidth()*.2, ofGetHeight()*.75, 0);
+	ofSetColor(123,123,11);
+	sphere.draw();
+	cam.begin();		
 
-	cam.begin();
-
-
-	ofSetColor(255);
-	//remoteVideo.draw(0,0);
-
-    //calculate the proper cropping location
-    cropPositionX = vW-mouseX*2;
-    cropPositionY = vH-mouseY*2;
-    if(cropPositionX < 0){
-        cropPositionX = 0;
-    }else if(cropPositionX > vW-cropSizeX){
-        cropPositionX = vW-cropSizeX;
-    }
-    if (cropPositionY < 0){
-        cropPositionY = 0;
-    }else if(cropPositionY > vH- cropSizeY){
-        cropPositionY = vH- cropSizeY;
-    }
-
-	//K, first 2 numbers are location on the canvas, next 2 are the crop size, 2 are position out of the image to crop at.
-	texture1.drawSubsection(0,0, cropSizeX, cropSizeY, cropPositionX, cropPositionY);
-	texture2.drawSubsection(cropSizeX,0, cropSizeX, cropSizeY, cropPositionX, cropPositionY);
-	//grabber1.draw(400,300,240,180);
-	//grabber2.draw(400,300,240,180);
-	gui.draw();
+	//You can either draw the mesh or the wireframe
+	// mainMesh.drawWireframe();
+	mainMesh.drawFaces();
 	cam.end();
+	
+	//draw framerate for fun
+	ofSetColor(255);
+	string msg = "fps: " + ofToString(ofGetFrameRate(), 2);
+	ofDrawBitmapString(msg, 10, 20);
+	
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
+	switch(key) {
+		case 'f':
+			ofToggleFullscreen();
+			break;
+	}
+
 }
 
 //--------------------------------------------------------------
@@ -161,11 +130,12 @@ void ofApp::keyReleased(int key){
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y ){
-
+	
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
+
 
 }
 
@@ -190,6 +160,11 @@ void ofApp::gotMessage(ofMessage msg){
 }
 
 //--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo){
+void ofApp::dragEvent(ofDragInfo dragInfo){ 
 
 }
+
+void ofApp::exit(){ 
+
+}
+
