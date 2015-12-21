@@ -18,6 +18,8 @@
 #include "ofxEchoCancel.h"
 #endif
 
+ #define STATIC_IMAGE 1
+
 class ofApp : public ofBaseApp{
 
 	public:
@@ -45,10 +47,14 @@ class ofApp : public ofBaseApp{
 		ofxGstRTPClient client1, client2;
 		//ofxGstRTPServer server;
 
+
 		ofVideoGrabber grabber1, grabber2;
 		ofTexture texture1, texture2;
+		ofImage ofLogo;
 
 		ofxPanel gui;
+
+		ofEasyCam cam;		
 #if DO_ECHO_CANCEL
 		ofxEchoCancel echoCancel;
 #endif
