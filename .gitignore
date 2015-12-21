@@ -1,3 +1,5 @@
 obj/
+/bin/gStreamer_debug
+/bin/gStreamer
 
 

@@ -43,7 +43,7 @@ void ofApp::setup(){
 	// over internet you'll probably need to make it higher, around 200 is usually a good
 	// number but depends on the network conditions
 	client1.setup(10);
-	client1.addVideoChannel(5000);
+	client1.addVideoChannel(5004);
 	client2.setup(10);
 	client2.addVideoChannel(6000);
 	//client.addAudioChannel(6000);
@@ -75,6 +75,8 @@ void ofApp::exit(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
+
+
 	grabber1.update();
 	grabber2.update();
 	//if(grabber.isFrameNew()){
@@ -114,8 +116,8 @@ void ofApp::draw(){
 	//K, first 2 numbers are location on the canvas, next 2 are the crop size, 2 are position out of the image to crop at.
 	texture1.drawSubsection(0,0, cropSizeX, cropSizeY, cropPositionX, cropPositionY);
 	texture2.drawSubsection(cropSizeX,0, cropSizeX, cropSizeY, cropPositionX, cropPositionY);
-	grabber1.draw(400,300,240,180);
-	grabber2.draw(400,300,240,180);
+	//grabber1.draw(400,300,240,180);
+	//grabber2.draw(400,300,240,180);
 	gui.draw();
 }
 
