@@ -1,8 +1,8 @@
 ofxOsc
-ofxGui
+#ofxGui
 ofxSnappy
 ofxGStreamer
 ofxGstRTP
 ofxXMPP
 ofxNice
-ofxDepthStreamCompression
+#ofxDepthStreamCompression

@@ -67,11 +67,12 @@ void ofApp::setup(){
 	server.setup("127.0.0.1");
 	server.addVideoChannel(5000,640,480,30);
 	server.addAudioChannel(6000);
-*/
+
 	gui.setup("Awesome Gui","settings.xml",640+640+20,10);
 	gui.add(client1.parameters);
 	gui.add(client2.parameters);
 	//gui.add(server.parameters);
+*/
 #if DO_ECHO_CANCEL
 	gui.add(echoCancel.parameters);
 #endif
@@ -113,8 +114,8 @@ void ofApp::update(){
 		texture2.loadData(client2.getPixelsVideo());
 	}
 	}else{
-		texture1.loadData(ofLogo.getPixels());
-		texture1.loadData(ofLogo.getPixels());
+		texture1.loadData(ofLogo.getPixelsRef());
+	//	texture1.loadData(ofLogo.getTextureReference());
 	}
 }
 
@@ -146,7 +147,7 @@ void ofApp::draw(){
 	texture2.drawSubsection(cropSizeX,0, cropSizeX, cropSizeY, cropPositionX, cropPositionY);
 	//grabber1.draw(400,300,240,180);
 	//grabber2.draw(400,300,240,180);
-	gui.draw();
+	//gui.draw();
 	cam.end();
 }
 

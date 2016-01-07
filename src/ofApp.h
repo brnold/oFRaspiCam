@@ -10,7 +10,7 @@
 #include "ofMain.h"
 #include "ofxGstRTPClient.h"
 #include "ofxGstRTPServer.h"
-#include "ofxGui.h"
+//#include "ofxGui.h"
 
 #define DO_ECHO_CANCEL 0
 
@@ -24,8 +24,8 @@ class ofApp : public ofBaseApp{
 
 	public:
 
-	    int vW = 1920;
-	    int vH = 1080;
+	int vW = 1920;
+	   int vH = 1080;
 	    int cropSizeX = 640;
 	    int cropSizeY = 480;
 	    int cropPositionX, cropPositionY;
@@ -52,7 +52,7 @@ class ofApp : public ofBaseApp{
 		ofTexture texture1, texture2;
 		ofImage ofLogo;
 
-		ofxPanel gui;
+//		ofxPanel gui;
 
 		ofEasyCam cam;		
 #if DO_ECHO_CANCEL

@@ -1,0 +1,34 @@
+checking pkg-config libraries:   cairo zlib gstreamer-app-1.0 gstreamer-1.0 gstreamer-video-1.0 gstreamer-base-1.0 libudev freetype2 fontconfig sndfile openal openssl libpulse-simple alsa gl glu glew gtk+-3.0 libmpg123 
+Compiling OF library for Release
+make[1]: Entering directory '/home/brnold/December_Sucess/openFrameworks-0.8.4/libs/openFrameworksCompiled/project'
+checking pkg-config libraries:   cairo zlib gstreamer-app-1.0 gstreamer-1.0 gstreamer-video-1.0 gstreamer-base-1.0 libudev freetype2 fontconfig sndfile openal openssl libpulse-simple alsa gl glu glew gtk+-3.0 libmpg123 
+checking pkg-config libraries:   cairo zlib gstreamer-app-1.0 gstreamer-1.0 gstreamer-video-1.0 gstreamer-base-1.0 libudev freetype2 fontconfig sndfile openal openssl libpulse-simple alsa gl glu glew gtk+-3.0 libmpg123 
+make[2]: Nothing to be done for 'ReleaseABI'.
+checking pkg-config libraries:   cairo zlib gstreamer-app-1.0 gstreamer-1.0 gstreamer-video-1.0 gstreamer-base-1.0 libudev freetype2 fontconfig sndfile openal openssl libpulse-simple alsa gl glu glew gtk+-3.0 libmpg123 
+Done!
+make[1]: Leaving directory '/home/brnold/December_Sucess/openFrameworks-0.8.4/libs/openFrameworksCompiled/project'
+
+
+Compiling gStreamer for Release
+make[1]: Entering directory '/home/brnold/December_Sucess/openFrameworks-0.8.4/apps/myApps/gStreamer'
+checking pkg-config libraries:   cairo zlib gstreamer-app-1.0 gstreamer-1.0 gstreamer-video-1.0 gstreamer-base-1.0 libudev freetype2 fontconfig sndfile openal openssl libpulse-simple alsa gl glu glew gtk+-3.0 libmpg123 
+Compiling src/ofApp.cpp
+g++ -c -O3 -Wall -march=native -mtune=native -DOF_USING_GTK -DOF_USING_GTK -DOF_USING_MPG123 -DHAVE_MEMMOVE -I./src -I../../../addons/ofxOsc/src -I../../../addons/ofxOsc/libs -I../../../addons/ofxOsc/libs/oscpack -I../../../addons/ofxOsc/libs/oscpack/src -I../../../addons/ofxOsc/libs/oscpack/src/ip -I../../../addons/ofxOsc/libs/oscpack/src/ip/posix -I../../../addons/ofxOsc/libs/oscpack/src/ip/win32 -I../../../addons/ofxOsc/libs/oscpack/src/osc -I../../../addons/ofxGui/src -I../../../addons/ofxSnappy/libs -I../../../addons/ofxSnappy/libs/snappy -I../../../addons/ofxSnappy/libs/snappy/src -I../../../addons/ofxGStreamer/src -I../../../addons/ofxGstRTP/src -I../../../addons/ofxDepthStreamCompression/src -I../../../addons/ofxXMPP/src -I../../../addons/ofxXMPP/libs -I../../../addons/ofxXMPP/libs/strophe -I../../../addons/ofxXMPP/libs/strophe/lib -I../../../addons/ofxXMPP/libs/strophe/lib/linux -I../../../addons/ofxXMPP/libs/strophe/lib/vs -I../../../addons/ofxXMPP/libs/strophe/lib/osx -I../../../addons/ofxXMPP/libs/strophe/lib/linux64 -I../../../addons/ofxXMPP/libs/strophe/include -I../../../addons/ofxXMPP/libs/strophe/include -I../../../addons/ofxNice/src -I../../../addons/ofxNice/libs -I../../../addons/ofxNice/libs/libnice -D_REENTRANT -pthread -I/usr/include/gstreamer-1.0 -I/usr/include/AL -I/usr/include/alsa -I/usr/include/GL -I/usr/include/libdrm -I/usr/include/gtk-3.0 -I/usr/include/at-spi2-atk/2.0 -I/usr/include/at-spi-2.0 -I/usr/include/dbus-1.0 -I/usr/lib/x86_64-linux-gnu/dbus-1.0/include -I/usr/include/gtk-3.0 -I/usr/include/gio-unix-2.0/ -I/usr/include/mirclient -I/usr/include/mircommon -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/nice -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I../../../libs/cairo/include -I../../../libs/cairo/include/libpng15 -I../../../libs/cairo/include/cairo -I../../../libs/cairo/include/pixman-1 -I../../../libs/fmodex/include -I../../../libs/glfw/include -I../../../libs/glfw/include/GLFW -I../../../libs/kiss/include -I../../../libs/openssl/include -I../../../libs/openssl/include/openssl -I../../../libs/poco/include -I../../../libs/rtAudio/include -I../../../libs/tess2/include -I../../../libs/openFrameworks -I../../../libs/openFrameworks/utils -I../../../libs/openFrameworks/sound -I../../../libs/openFrameworks/types -I../../../libs/openFrameworks/graphics -I../../../libs/openFrameworks/app -I../../../libs/openFrameworks/video -I../../../libs/openFrameworks/3d -I../../../libs/openFrameworks/events -I../../../libs/openFrameworks/gl -I../../../libs/openFrameworks/communication -I../../../libs/openFrameworks/math -D_REENTRANT -pthread -I/usr/include/gstreamer-1.0 -I/usr/include/AL -I/usr/include/alsa -I/usr/include/GL -I/usr/include/libdrm -I/usr/include/gtk-3.0 -I/usr/include/at-spi2-atk/2.0 -I/usr/include/at-spi-2.0 -I/usr/include/dbus-1.0 -I/usr/lib/x86_64-linux-gnu/dbus-1.0/include -I/usr/include/gtk-3.0 -I/usr/include/gio-unix-2.0/ -I/usr/include/mirclient -I/usr/include/mircommon -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/nice -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -MMD -MP -MF obj/linux64/Release/src/ofApp.d -MT obj/linux64/Release/src/ofApp.o -o obj/linux64/Release/src/ofApp.o -c src/ofApp.cpp
+In file included from src/ofApp.cpp:1:0:
+src/ofApp.h:27:18: error: ISO C++ forbids in-class initialization of non-const static member ‘ofApp::vW’
+  static int vW = 1920;
+                  ^
+src/ofApp.h:28:21: error: ISO C++ forbids in-class initialization of non-const static member ‘ofApp::vH’
+  static    int vH = 1080;
+                     ^
+src/ofApp.h:29:28: error: ISO C++ forbids in-class initialization of non-const static member ‘ofApp::cropSizeX’
+  static    int cropSizeX = 640;
+                            ^
+src/ofApp.h:30:28: error: ISO C++ forbids in-class initialization of non-const static member ‘ofApp::cropSizeY’
+  static    int cropSizeY = 480;
+                            ^
+../../../libs/openFrameworksCompiled/project/makefileCommon/compile.project.mk:191: recipe for target 'obj/linux64/Release/src/ofApp.o' failed
+make[1]: *** [obj/linux64/Release/src/ofApp.o] Error 1
+make[1]: Leaving directory '/home/brnold/December_Sucess/openFrameworks-0.8.4/apps/myApps/gStreamer'
+../../../libs/openFrameworksCompiled/project/makefileCommon/compile.project.mk:126: recipe for target 'Release' failed
+make: *** [Release] Error 2
