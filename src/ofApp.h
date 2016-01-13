@@ -24,10 +24,17 @@ class ofApp : public ofBaseApp{
 
 	public:
 
-	int vW = 1920;
-	   int vH = 1080;
-	    int cropSizeX = 640;
-	    int cropSizeY = 480;
+		//static inmage crap
+		int w, h;
+		unsigned char * picPixels;	
+		//end crap
+
+
+		ofMesh quad;
+		int vW;
+	    int vH;
+	    int cropSizeX;
+	    int cropSizeY;
 	    int cropPositionX, cropPositionY;
 		void setup();
 		void update();

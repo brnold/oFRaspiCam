@@ -1,25 +1,51 @@
 #include "ofApp.h"
 
-//--------------------------------------------------------------
+//-------------------------------------------------------------
+
+
 void ofApp::setup(){
 	
+	vW = 1920;
+	vH = 1080;
+	cropSizeX = 640;
+	cropSizeY = 480;
+
+	w = 100;
+	h = 100;
+	picPixels = new unsigned char [w*h*3];
+
+	for (int i = 0; i < w; i++){
+		for (int j = 0; j < h; j++){
+			picPixels[(j*w+i)*3 + 0] = i;	// r
+			picPixels[(j*w+i)*3 + 1] = j;	// g
+			picPixels[(j*w+i)*3 + 2] = 0; // b
+		}
+	}
+
 	ofSetVerticalSync(true);
 	
 	// this uses depth information for occlusion
 	// rather than always drawing things on top of each other
 	ofEnableDepthTest();
+
+	ofEnableNormalizedTexCoords();
 	
 	// this sets the camera's distance from the object
-	cam.setDistance(10000);
+	cam.setDistance(10);
 
+#if !STATIC_IMAGE
 	//for the cameras
 	grabber1.initGrabber(vW,vH);
 	grabber2.initGrabber(vW,vH);
+#endif
+	
 		
 	
-	texture1.allocate(vW,vH,GL_RGB);
+	texture1.allocate(w,h,GL_RGB);
+	texture1.loadData(picPixels, w, h, GL_RGB);
+
 	texture2.allocate(vW,vH,GL_RGB);
-	ofLogo.loadImage("of.png");
+	ofLogo.loadImage("photo.jpg");
 
 	// to run this example sending data from different applications or computers
 	// set the ports to be different in the client and server, but matching the client
@@ -56,12 +82,14 @@ void ofApp::setup(){
 	// this sets the remote ip and the latency, in a LAN you can usually use latency 0
 	// over internet you'll probably need to make it higher, around 200 is usually a good
 	// number but depends on the network conditions
-	if(!STATIC_IMAGE){
+#if !STATIC_IMAGE
 	client1.setup(10);
 	client1.addVideoChannel(5004);
 	client2.setup(10);
 	client2.addVideoChannel(6000);
-	}
+	client1.play();
+	client2.play();
+#endif
 	//client.addAudioChannel(6000);
 /* 
 	server.setup("127.0.0.1");
@@ -77,18 +105,38 @@ void ofApp::setup(){
 	gui.add(echoCancel.parameters);
 #endif
 
-	if(!STATIC_IMAGE){
-	client1.play();
-	client2.play();
-	}
-	//server.play();
 
     ofSetFrameRate(75);
 	ofBackground(155);
+	
+
+	
+/*	// first triangle
+quad.addVertex(ofVec3f(0, 0, 1));
+quad.addVertex(ofVec3f(500, 0, 1));
+quad.addVertex(ofVec3f(500, 389, 1));
+ 
+// second triangle
+quad.addVertex(ofVec3f(500, 389, 1));
+quad.addVertex(ofVec3f(0, 389, 1));
+quad.addVertex(ofVec3f(0, 0, 1));
+ 
+// first triangle
+quad.addTexCoord(ofVec2f(0, 0));
+quad.addTexCoord(ofVec2f(500, 0));
+quad.addTexCoord(ofVec2f(500, 389));
+ 
+// second triangle
+quad.addTexCoord(ofVec2f(500, 389));
+quad.addTexCoord(ofVec2f(0, 389));
+quad.addTexCoord(ofVec2f(0, 0));*/
+
+
 }
 
 
 void ofApp::exit(){
+
 }
 
 
@@ -96,8 +144,8 @@ void ofApp::exit(){
 void ofApp::update(){
 
 
-	grabber1.update();
-	grabber2.update();
+	//grabber1.update();
+	//grabber2.update();
 	//if(grabber.isFrameNew()){
 	//	server.newFrame(grabber.getPixelsRef());
 	//}
@@ -106,48 +154,60 @@ void ofApp::update(){
 	client2.update();
 	
 	if(!STATIC_IMAGE){
-	if(client1.isFrameNewVideo()){
-		texture1.loadData(client1.getPixelsVideo());
-	}
+		if(client1.isFrameNewVideo()){
+			texture1.loadData(client1.getPixelsVideo());
+		}
 
-	if(client2.isFrameNewVideo()){
-		texture2.loadData(client2.getPixelsVideo());
-	}
+		if(client2.isFrameNewVideo()){
+			texture2.loadData(client2.getPixelsVideo());
+		}
 	}else{
-		texture1.loadData(ofLogo.getPixelsRef());
-	//	texture1.loadData(ofLogo.getTextureReference());
+		texture1.loadData(picPixels, 256, 256, GL_RGB);
+		//texture1.loadData("of.png");
 	}
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-
+	ofBackground(140, 40, 40);
+	float movementSpeed = .1;
+	float cloudSize = ofGetWidth() / 2;
+	float maxBoxSize = 100;
+	float spacing = 1;
+	int boxCount = 1;
+	
 	cam.begin();
-
-
-	ofSetColor(255);
-	//remoteVideo.draw(0,0);
-
-    //calculate the proper cropping location
-    cropPositionX = vW-mouseX*2;
-    cropPositionY = vH-mouseY*2;
-    if(cropPositionX < 0){
-        cropPositionX = 0;
-    }else if(cropPositionX > vW-cropSizeX){
-        cropPositionX = vW-cropSizeX;
-    }
-    if (cropPositionY < 0){
-        cropPositionY = 0;
-    }else if(cropPositionY > vH- cropSizeY){
-        cropPositionY = vH- cropSizeY;
-    }
-
-	//K, first 2 numbers are location on the canvas, next 2 are the crop size, 2 are position out of the image to crop at.
-	texture1.drawSubsection(0,0, cropSizeX, cropSizeY, cropPositionX, cropPositionY);
-	texture2.drawSubsection(cropSizeX,0, cropSizeX, cropSizeY, cropPositionX, cropPositionY);
-	//grabber1.draw(400,300,240,180);
-	//grabber2.draw(400,300,240,180);
-	//gui.draw();
+	
+	for(int i = 0; i < boxCount; i++) {
+		ofPushMatrix();
+		
+		float t = 0;
+		ofVec3f pos(
+			ofSignedNoise(t, 0, 0),
+			ofSignedNoise(0, t, 0),
+			ofSignedNoise(0, 0, t));
+		
+		float boxSize = 251;
+		
+		
+		ofTranslate(pos);
+		ofRotateX(pos.x);
+		ofRotateY(pos.y);
+		ofRotateZ(pos.z);
+		
+		ofLogo.bind();
+		ofFill();
+		//ofSetColor(255);
+		ofDrawBox(0,0,0,boxSize,boxSize, 0);
+		ofLogo.unbind();
+		
+		//ofNoFill();
+		//ofSetColor(ofColor::fromHsb(sinf(t) * 128 + 128, 255, 255));
+		//ofDrawBox(boxSize * 1.1f);
+		
+		ofPopMatrix();
+	}
+	
 	cam.end();
 }
 
@@ -167,7 +227,7 @@ void ofApp::mouseMoved(int x, int y ){
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-
+	cam.setDistance(mouseX);
 }
 
 //--------------------------------------------------------------
