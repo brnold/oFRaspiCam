@@ -10,17 +10,27 @@ void ofApp::setup(){
 	cropSizeX = 640;
 	cropSizeY = 480;
 
-	w = 100;
-	h = 100;
-	picPixels = new unsigned char [w*h*3];
+	//w = 251;
+	//h = 251;
+	picPixels = new unsigned char [w*h];
 
-	for (int i = 0; i < w; i++){
+	ofLogo.loadImage("photo.jpg");
+	w = (int)ofLogo.getWidth();
+	h = (int)ofLogo.getHeight();
+
+    //unsigned char pix;
+
+	//&pix = ofLogo.getPixels;
+
+
+
+	/*for (int i = 0; i < w; i++){
 		for (int j = 0; j < h; j++){
-			picPixels[(j*w+i)*3 + 0] = i;	// r
-			picPixels[(j*w+i)*3 + 1] = j;	// g
-			picPixels[(j*w+i)*3 + 2] = 0; // b
+			picPixels[(j*w+i)*3 + 0] = pix[i];	// r
+			picPixels[(j*w+i)*3 + 1] = pix[i];	// g
+			picPixels[(j*w+i)*3 + 2] = pix[i]; // b
 		}
-	}
+	}*/
 
 	ofSetVerticalSync(true);
 	
@@ -31,7 +41,7 @@ void ofApp::setup(){
 	ofEnableNormalizedTexCoords();
 	
 	// this sets the camera's distance from the object
-	cam.setDistance(10);
+	cam.setDistance(80);
 
 #if !STATIC_IMAGE
 	//for the cameras
@@ -41,11 +51,13 @@ void ofApp::setup(){
 	
 		
 	
+
 	texture1.allocate(w,h,GL_RGB);
-	texture1.loadData(picPixels, w, h, GL_RGB);
+	ofLoadImage(texture1, "photo.jpg");
+	//texture1.loadData(picPixels, w, h, GL_RGB);
 
 	texture2.allocate(vW,vH,GL_RGB);
-	ofLogo.loadImage("photo.jpg");
+	
 
 	// to run this example sending data from different applications or computers
 	// set the ports to be different in the client and server, but matching the client
@@ -162,7 +174,7 @@ void ofApp::update(){
 			texture2.loadData(client2.getPixelsVideo());
 		}
 	}else{
-		texture1.loadData(picPixels, 256, 256, GL_RGB);
+		//texture1.loadData(picPixels, 256, 256, GL_RGB);
 		//texture1.loadData("of.png");
 	}
 }
@@ -171,14 +183,13 @@ void ofApp::update(){
 void ofApp::draw(){
 	ofBackground(140, 40, 40);
 	float movementSpeed = .1;
-	float cloudSize = ofGetWidth() / 2;
 	float maxBoxSize = 100;
 	float spacing = 1;
 	int boxCount = 1;
 	
 	cam.begin();
 	
-	for(int i = 0; i < boxCount; i++) {
+
 		ofPushMatrix();
 		
 		float t = 0;
@@ -195,18 +206,18 @@ void ofApp::draw(){
 		ofRotateY(pos.y);
 		ofRotateZ(pos.z);
 		
-		ofLogo.bind();
+		texture1.bind();
 		ofFill();
 		//ofSetColor(255);
 		ofDrawBox(0,0,0,boxSize,boxSize, 0);
-		ofLogo.unbind();
+		texture1.unbind();
 		
 		//ofNoFill();
 		//ofSetColor(ofColor::fromHsb(sinf(t) * 128 + 128, 255, 255));
 		//ofDrawBox(boxSize * 1.1f);
 		
 		ofPopMatrix();
-	}
+
 	
 	cam.end();
 }
@@ -227,7 +238,8 @@ void ofApp::mouseMoved(int x, int y ){
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-	cam.setDistance(mouseX);
+	if(button == OF_MOUSE_BUTTON_RIGHT)
+		cam.setDistance(mouseX);
 }
 
 //--------------------------------------------------------------
