@@ -20,6 +20,7 @@
 #endif
 
 #define STATIC_IMAGE 1
+#define VIDEO 0 
 
 #define OCULUS_YAH 1
 
@@ -57,7 +58,8 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
-		void drawScene();
+		void drawSceneImage();
+		void drawSceneVideo(int side);
 
 		ofxGstRTPClient client1, client2;
 		//ofxGstRTPServer server;

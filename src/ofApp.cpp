@@ -5,6 +5,12 @@
 
 void ofApp::setup(){
 
+	vW = 1920;
+	vH = 1080;
+	cropSizeX = 640;
+	cropSizeY = 480;
+
+
 #if OCULUS_YAH
 	oculusRift.baseCamera = &cam; //attach to your camera
     //opens the device, an Oculus must be plugged in 
@@ -29,18 +35,25 @@ void ofApp::setup(){
 
     ofSetFrameRate(75);
 
-#if !STATIC_IMAGE
+//#if VIDEO //so Video
 	//for the cameras
+
 	grabber1.initGrabber(vW,vH);
 	grabber2.initGrabber(vW,vH);
+
+	texture1.allocate(vW,vH,GL_RGB);
+	texture2.allocate(vW,vH,GL_RGB);
+#if VIDEO
+	client1.setup(10);
+	client1.addVideoChannel(5000);
+	client2.setup(10);
+	client2.addVideoChannel(6000);
+	client1.play();
+	client2.play();
+
 #endif
 
-
-	vW = 1920;
-	vH = 1080;
-	cropSizeX = 640;
-	cropSizeY = 480;
-
+#if STATIC_IMAGE //so Image
 
 	ofLogo.loadImage("photo.jpg");
 	w = (int)ofLogo.getWidth();
@@ -51,7 +64,13 @@ void ofApp::setup(){
 	ofLoadImage(texture1, "photo.jpg");
 	//texture1.loadData(picPixels, w, h, GL_RGB);
 
-	texture2.allocate(vW,vH,GL_RGB);
+	texture2.allocate(w,h,GL_RGB);
+	ofLoadImage(texture2, "photo.jpg");
+#endif	
+	
+	
+
+	
 	
 
 	// to run this example sending data from different applications or computers
@@ -89,14 +108,7 @@ void ofApp::setup(){
 	// this sets the remote ip and the latency, in a LAN you can usually use latency 0
 	// over internet you'll probably need to make it higher, around 200 is usually a good
 	// number but depends on the network conditions
-#if !STATIC_IMAGE
-	client1.setup(10);
-	client1.addVideoChannel(5004);
-	client2.setup(10);
-	client2.addVideoChannel(6000);
-	client1.play();
-	client2.play();
-#endif
+
 	//client.addAudioChannel(6000);
 /* 
 	server.setup("127.0.0.1");
@@ -112,11 +124,6 @@ void ofApp::setup(){
 	gui.add(echoCancel.parameters);
 #endif
 
-
-	
-
-
-
 }
 
 
@@ -128,9 +135,12 @@ void ofApp::exit(){
 //--------------------------------------------------------------
 void ofApp::update(){
 
+#if VIDEO
 
-	//grabber1.update();
-	//grabber2.update();
+	/* code */
+
+	grabber1.update();
+	grabber2.update();
 	//if(grabber.isFrameNew()){
 	//	server.newFrame(grabber.getPixelsRef());
 	//}
@@ -146,13 +156,14 @@ void ofApp::update(){
 		if(client2.isFrameNewVideo()){
 			texture2.loadData(client2.getPixelsVideo());
 		}
-	}else{
-		//texture1.loadData(picPixels, 256, 256, GL_RGB);
-		//texture1.loadData("of.png");
 	}
+#endif
+
 }
 
 //--------------------------------------------------------------
+
+
 void ofApp::draw(){
 	//move your camera wherever you'd like, this becomes the base
     //position of the view
@@ -165,24 +176,72 @@ void ofApp::draw(){
    
     
     oculusRift.beginLeftEye();
-    drawScene();
+    
+    drawSceneVideo(0);
 
     oculusRift.endLeftEye();
 
     oculusRift.beginRightEye();
    
-    drawScene();  
+    drawSceneVideo(1);  
 
     oculusRift.endRightEye();
 
     cam.end();
 
     //pushes the render texture to the viewer
-    oculusRift.draw();
+   oculusRift.draw();
 }
 
-void ofApp::drawScene(){
+void ofApp::drawSceneVideo(int side){
+	float movementSpeed = .1;
+	float maxBoxSize = 100;
+	float spacing = 1;
+	int boxCount = 1;
 
+	//ofBackground(74, 88, 150);
+
+	ofPushMatrix();
+	
+	float t = 0;
+	ofVec3f pos(
+		ofSignedNoise(t, 0, 0),
+		ofSignedNoise(0, t, 0),
+		ofSignedNoise(0, 0, t));
+	
+	float boxSize = 251;
+	
+	
+	ofTranslate(pos);
+	ofRotateX(pos.x);
+	ofRotateY(pos.y);
+	ofRotateZ(pos.z);
+	
+	if(side == 0){ // left eye
+		texture1.bind();
+	ofFill();
+	//ofSetColor(255);
+	ofDrawBox(0,0,0,boxSize,boxSize, 0);
+	texture1.unbind();
+	}else{ //right eye
+
+	texture2.bind();
+	ofFill();
+	//ofSetColor(255);
+	ofDrawBox(0,0,0,boxSize,boxSize, 0);
+	texture2.unbind();
+	}	
+	
+	//ofNoFill();
+	//ofSetColor(ofColor::fromHsb(sinf(t) * 128 + 128, 255, 255));
+	//ofDrawBox(boxSize * 1.1f);
+	
+	ofPopMatrix();
+}
+
+void ofApp::drawSceneImage(){
+
+	
 	float movementSpeed = .1;
 	float maxBoxSize = 100;
 	float spacing = 1;
@@ -223,6 +282,17 @@ void ofApp::drawScene(){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
+
+	switch(key){
+		case 'F':
+		case 'f':
+			ofToggleFullscreen();
+			break;
+		case 'Q':
+		case 'q':
+
+			break;
+	}
 }
 
 //--------------------------------------------------------------
