@@ -4,34 +4,17 @@
 
 
 void ofApp::setup(){
-	
-	vW = 1920;
-	vH = 1080;
-	cropSizeX = 640;
-	cropSizeY = 480;
 
-	//w = 251;
-	//h = 251;
-	picPixels = new unsigned char [w*h];
+#if OCULUS_YAH
+	oculusRift.baseCamera = &cam; //attach to your camera
+    //opens the device, an Oculus must be plugged in 
+    //as it uses the params returned from the head set to configure 
+    //the resolution settings
+    oculusRift.setup();
 
-	ofLogo.loadImage("photo.jpg");
-	w = (int)ofLogo.getWidth();
-	h = (int)ofLogo.getHeight();
+#endif
 
-    //unsigned char pix;
-
-	//&pix = ofLogo.getPixels;
-
-
-
-	/*for (int i = 0; i < w; i++){
-		for (int j = 0; j < h; j++){
-			picPixels[(j*w+i)*3 + 0] = pix[i];	// r
-			picPixels[(j*w+i)*3 + 1] = pix[i];	// g
-			picPixels[(j*w+i)*3 + 2] = pix[i]; // b
-		}
-	}*/
-
+ 
 	ofSetVerticalSync(true);
 	
 	// this uses depth information for occlusion
@@ -41,17 +24,29 @@ void ofApp::setup(){
 	ofEnableNormalizedTexCoords();
 	
 	// this sets the camera's distance from the object
-	cam.setDistance(80);
+	cam.setDistance(100);
+
+
+    ofSetFrameRate(75);
 
 #if !STATIC_IMAGE
 	//for the cameras
 	grabber1.initGrabber(vW,vH);
 	grabber2.initGrabber(vW,vH);
 #endif
-	
-		
-	
 
+
+	vW = 1920;
+	vH = 1080;
+	cropSizeX = 640;
+	cropSizeY = 480;
+
+
+	ofLogo.loadImage("photo.jpg");
+	w = (int)ofLogo.getWidth();
+	h = (int)ofLogo.getHeight();
+
+	
 	texture1.allocate(w,h,GL_RGB);
 	ofLoadImage(texture1, "photo.jpg");
 	//texture1.loadData(picPixels, w, h, GL_RGB);
@@ -118,30 +113,8 @@ void ofApp::setup(){
 #endif
 
 
-    ofSetFrameRate(75);
-	ofBackground(155);
 	
 
-	
-/*	// first triangle
-quad.addVertex(ofVec3f(0, 0, 1));
-quad.addVertex(ofVec3f(500, 0, 1));
-quad.addVertex(ofVec3f(500, 389, 1));
- 
-// second triangle
-quad.addVertex(ofVec3f(500, 389, 1));
-quad.addVertex(ofVec3f(0, 389, 1));
-quad.addVertex(ofVec3f(0, 0, 1));
- 
-// first triangle
-quad.addTexCoord(ofVec2f(0, 0));
-quad.addTexCoord(ofVec2f(500, 0));
-quad.addTexCoord(ofVec2f(500, 389));
- 
-// second triangle
-quad.addTexCoord(ofVec2f(500, 389));
-quad.addTexCoord(ofVec2f(0, 389));
-quad.addTexCoord(ofVec2f(0, 0));*/
 
 
 }
@@ -181,45 +154,71 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-	ofBackground(140, 40, 40);
+	//move your camera wherever you'd like, this becomes the base
+    //position of the view
+	
+
+	cam.begin();
+    //cam.end();
+    //now render using oculus flow
+   
+   
+    
+    oculusRift.beginLeftEye();
+    drawScene();
+
+    oculusRift.endLeftEye();
+
+    oculusRift.beginRightEye();
+   
+    drawScene();  
+
+    oculusRift.endRightEye();
+
+    cam.end();
+
+    //pushes the render texture to the viewer
+    oculusRift.draw();
+}
+
+void ofApp::drawScene(){
+
 	float movementSpeed = .1;
 	float maxBoxSize = 100;
 	float spacing = 1;
 	int boxCount = 1;
-	
-	cam.begin();
-	
 
-		ofPushMatrix();
-		
-		float t = 0;
-		ofVec3f pos(
-			ofSignedNoise(t, 0, 0),
-			ofSignedNoise(0, t, 0),
-			ofSignedNoise(0, 0, t));
-		
-		float boxSize = 251;
-		
-		
-		ofTranslate(pos);
-		ofRotateX(pos.x);
-		ofRotateY(pos.y);
-		ofRotateZ(pos.z);
-		
-		texture1.bind();
-		ofFill();
-		//ofSetColor(255);
-		ofDrawBox(0,0,0,boxSize,boxSize, 0);
-		texture1.unbind();
-		
-		//ofNoFill();
-		//ofSetColor(ofColor::fromHsb(sinf(t) * 128 + 128, 255, 255));
-		//ofDrawBox(boxSize * 1.1f);
-		
-		ofPopMatrix();
+	//ofBackground(74, 88, 150);
+
+	ofPushMatrix();
+	
+	float t = 0;
+	ofVec3f pos(
+		ofSignedNoise(t, 0, 0),
+		ofSignedNoise(0, t, 0),
+		ofSignedNoise(0, 0, t));
+	
+	float boxSize = 251;
+	
+	
+	ofTranslate(pos);
+	ofRotateX(pos.x);
+	ofRotateY(pos.y);
+	ofRotateZ(pos.z);
+	
+	texture1.bind();
+	ofFill();
+	//ofSetColor(255);
+	ofDrawBox(0,0,0,boxSize,boxSize, 0);
+	texture1.unbind();
+	
+	//ofNoFill();
+	//ofSetColor(ofColor::fromHsb(sinf(t) * 128 + 128, 255, 255));
+	//ofDrawBox(boxSize * 1.1f);
+	
+	ofPopMatrix();
 
 	
-	cam.end();
 }
 
 //--------------------------------------------------------------
@@ -239,7 +238,7 @@ void ofApp::mouseMoved(int x, int y ){
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
 	if(button == OF_MOUSE_BUTTON_RIGHT)
-		cam.setDistance(mouseX);
+		cam.setDistance(mouseX+75);
 }
 
 //--------------------------------------------------------------

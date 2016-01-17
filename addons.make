@@ -6,3 +6,4 @@ ofxGstRTP
 ofxXMPP
 ofxNice
 #ofxDepthStreamCompression
+ofxOculusDK2

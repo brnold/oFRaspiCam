@@ -10,6 +10,7 @@
 #include "ofMain.h"
 #include "ofxGstRTPClient.h"
 #include "ofxGstRTPServer.h"
+#include "ofxOculusDK2.h"
 //#include "ofxGui.h"
 
 #define DO_ECHO_CANCEL 0
@@ -18,7 +19,12 @@
 #include "ofxEchoCancel.h"
 #endif
 
- #define STATIC_IMAGE 1
+#define STATIC_IMAGE 1
+
+#define OCULUS_YAH 1
+
+
+
 
 class ofApp : public ofBaseApp{
 
@@ -51,6 +57,8 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
+		void drawScene();
+
 		ofxGstRTPClient client1, client2;
 		//ofxGstRTPServer server;
 
@@ -59,8 +67,7 @@ class ofApp : public ofBaseApp{
 		ofTexture texture1, texture2;
 		ofImage ofLogo;
 
-//		ofxPanel gui;
-
+		ofxOculusDK2		oculusRift;
 		ofEasyCam cam;		
 #if DO_ECHO_CANCEL
 		ofxEchoCancel echoCancel;
