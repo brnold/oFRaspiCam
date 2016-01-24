@@ -194,12 +194,14 @@ void ofApp::draw(){
 }
 
 void ofApp::drawSceneVideo(int side){
-	float movementSpeed = .1;
-	float maxBoxSize = 100;
-	float spacing = 1;
-	int boxCount = 1;
-
 	//ofBackground(74, 88, 150);
+
+
+    ofPushMatrix();
+	ofRotate(90, 0, 0, -10);
+    ofDrawGridPlane(100.0f, 2.0f, false );
+	ofPopMatrix();
+
 
 	ofPushMatrix();
 	
@@ -239,7 +241,7 @@ void ofApp::drawSceneVideo(int side){
 	ofPopMatrix();
 }
 
-void ofApp::drawSceneImage(){
+void ofApp::drawSceneImage(){ //not used, aka, delete me!
 
 	
 	float movementSpeed = .1;
@@ -290,7 +292,7 @@ void ofApp::keyPressed(int key){
 			break;
 		case 'Q':
 		case 'q':
-
+			oculusRift.dismissSafetyWarning();
 			break;
 	}
 }
