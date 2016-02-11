@@ -5,8 +5,8 @@
 
 void ofApp::setup(){
 
-	vW = 1920;
-	vH = 1080;
+	vW  = 1920;
+	vH  = 1080;
 	cropSizeX = 640;
 	cropSizeY = 480;
 
@@ -38,16 +38,16 @@ void ofApp::setup(){
 //#if VIDEO //so Video
 	//for the cameras
 
-	grabber1.initGrabber(vW,vH);
-	grabber2.initGrabber(vW,vH);
-
+	//grabber1.initGrabber(vW,vH);
+	//grabber2.initGrabber(vW,vH);
+#if VIDEO
 	texture1.allocate(vW,vH,GL_RGB);
 	texture2.allocate(vW,vH,GL_RGB);
-#if VIDEO
+
 	client1.setup(10);
 	client1.addVideoChannel(5000);
 	client2.setup(10);
-	client2.addVideoChannel(6000);
+	client2.addVideoChannel(5001);
 	client1.play();
 	client2.play();
 
@@ -124,6 +124,8 @@ void ofApp::setup(){
 	gui.add(echoCancel.parameters);
 #endif
 
+createMeshWithTexture(texture1);
+
 }
 
 
@@ -139,8 +141,8 @@ void ofApp::update(){
 
 	/* code */
 
-	grabber1.update();
-	grabber2.update();
+	//grabber1.update();
+	//grabber2.update();
 	//if(grabber.isFrameNew()){
 	//	server.newFrame(grabber.getPixelsRef());
 	//}
@@ -151,7 +153,11 @@ void ofApp::update(){
 	if(!STATIC_IMAGE){
 		if(client1.isFrameNewVideo()){
 			texture1.loadData(client1.getPixelsVideo());
+			//temp
+			texture2.loadData(client1.getPixelsVideo());
 		}
+
+
 
 		if(client2.isFrameNewVideo()){
 			texture2.loadData(client2.getPixelsVideo());
@@ -176,15 +182,11 @@ void ofApp::draw(){
    
     
     oculusRift.beginLeftEye();
-    
     drawSceneVideo(0);
-
     oculusRift.endLeftEye();
 
-    oculusRift.beginRightEye();
-   
+    oculusRift.beginRightEye(); 
     drawSceneVideo(1);  
-
     oculusRift.endRightEye();
 
     cam.end();
@@ -205,13 +207,13 @@ void ofApp::drawSceneVideo(int side){
 
 	ofPushMatrix();
 	
-	float t = 0;
+
 	ofVec3f pos(
-		ofSignedNoise(t, 0, 0),
-		ofSignedNoise(0, t, 0),
-		ofSignedNoise(0, 0, t));
+		0,
+		0,
+		0);
 	
-	float boxSize = 251;
+	float planeSize = 9000;
 	
 	
 	ofTranslate(pos);
@@ -219,24 +221,31 @@ void ofApp::drawSceneVideo(int side){
 	ofRotateY(pos.y);
 	ofRotateZ(pos.z);
 	
+	ofEnableDepthTest();
+
 	if(side == 0){ // left eye
+		texture1.bind();
+		//ofFill();
+		mesh.draw();
+		texture1.unbind();
+
+		//ofSetColor(255);
+		//ofDrawSphere(0,0,0,planeSize);
+		
+		
+	}else{ //right eye
+
 		texture1.bind();
 	ofFill();
 	//ofSetColor(255);
-	ofDrawBox(0,0,0,boxSize,boxSize, 0);
+	ofDrawBox(0,0,0,108,100, 0);
 	texture1.unbind();
-	}else{ //right eye
-
-	texture2.bind();
-	ofFill();
-	//ofSetColor(255);
-	ofDrawBox(0,0,0,boxSize,boxSize, 0);
-	texture2.unbind();
+		
 	}	
-	
+	ofDisableDepthTest();	
 	//ofNoFill();
 	//ofSetColor(ofColor::fromHsb(sinf(t) * 128 + 128, 255, 255));
-	//ofDrawBox(boxSize * 1.1f);
+	//ofDrawBox(planeSize * 1.1f);
 	
 	ofPopMatrix();
 }
@@ -245,7 +254,7 @@ void ofApp::drawSceneImage(){ //not used, aka, delete me!
 
 	
 	float movementSpeed = .1;
-	float maxBoxSize = 100;
+	float maxplaneSize = 100;
 	float spacing = 1;
 	int boxCount = 1;
 
@@ -259,7 +268,7 @@ void ofApp::drawSceneImage(){ //not used, aka, delete me!
 		ofSignedNoise(0, t, 0),
 		ofSignedNoise(0, 0, t));
 	
-	float boxSize = 251;
+	float planeSize = 251;
 	
 	
 	ofTranslate(pos);
@@ -270,15 +279,34 @@ void ofApp::drawSceneImage(){ //not used, aka, delete me!
 	texture1.bind();
 	ofFill();
 	//ofSetColor(255);
-	ofDrawBox(0,0,0,boxSize,boxSize, 0);
+	ofDrawBox(0,0,0,planeSize,planeSize, 0);
 	texture1.unbind();
 	
+	
+
 	//ofNoFill();
 	//ofSetColor(ofColor::fromHsb(sinf(t) * 128 + 128, 255, 255));
-	//ofDrawBox(boxSize * 1.1f);
+	//ofDrawBox(planeSize * 1.1f);
 	
 	ofPopMatrix();
 
+	
+}
+
+void ofApp::createMeshWithTexture(ofTexture& texture){
+	
+	//ofSpherePrimitive p = ofSpherePrimitive(100.0,100);
+	ofBoxPrimitive p = ofBoxPrimitive(1920,1080,0,100,100, 0);
+	
+	mesh = p.getMesh();
+	
+	for(int i = 0; i < mesh.getNumVertices(); i++){
+		ofVec2f texCoord = mesh.getTexCoord(i);
+		texCoord.x *= texture.getWidth();
+		texCoord.y  = (1.0 - texCoord.y) * texture.getHeight();
+		mesh.setTexCoord(i, texCoord);
+	}
+	ofLog(OF_LOG_VERBOSE, "aaaaaaaaaaaaaaaaaaaaaa" + ofToString(mesh.getNumVertices()));
 	
 }
 
@@ -295,6 +323,26 @@ void ofApp::keyPressed(int key){
 			oculusRift.dismissSafetyWarning();
 			break;
 	}
+}
+
+void ofApp::drawMesh(){
+
+    mesh.setMode(OF_PRIMITIVE_POINTS);
+
+    float intensityThreshold = 0.0;
+    int w = ofLogo.getWidth();
+    int h = ofLogo.getHeight();
+    for (int x=0; x<w; ++x) {
+        for (int y=0; y<h; ++y) {
+            ofColor c = ofLogo.getColor(x, y);
+            float intensity = c.getLightness();
+            if (intensity >= intensityThreshold) {
+                ofVec3f pos(x, y, x);
+                mesh.addVertex(pos);
+                mesh.addColor(c);
+            }
+        }
+    }
 }
 
 //--------------------------------------------------------------

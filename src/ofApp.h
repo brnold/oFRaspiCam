@@ -19,8 +19,8 @@
 #include "ofxEchoCancel.h"
 #endif
 
-#define STATIC_IMAGE 1
-#define VIDEO 0 
+#define STATIC_IMAGE 0
+#define VIDEO 1
 
 #define OCULUS_YAH 1
 
@@ -37,7 +37,7 @@ class ofApp : public ofBaseApp{
 		//end crap
 
 
-		ofMesh quad;
+		ofMesh mesh;
 		int vW;
 	    int vH;
 	    int cropSizeX;
@@ -60,6 +60,8 @@ class ofApp : public ofBaseApp{
 
 		void drawSceneImage();
 		void drawSceneVideo(int side);
+		void drawMesh();
+		void createMeshWithTexture(ofTexture& texture);
 
 		ofxGstRTPClient client1, client2;
 		//ofxGstRTPServer server;
