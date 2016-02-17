@@ -124,7 +124,9 @@ void ofApp::setup(){
 	gui.add(echoCancel.parameters);
 #endif
 
-createMeshWithTexture(texture1);
+//createMeshWithTexture(texture1);
+//drawMesh();
+
 
 }
 
@@ -225,8 +227,9 @@ void ofApp::drawSceneVideo(int side){
 
 	if(side == 0){ // left eye
 		texture1.bind();
-		//ofFill();
-		mesh.draw();
+		ofFill();
+		//mesh.draw();
+		ofDrawSphere(0,0,1080);
 		texture1.unbind();
 
 		//ofSetColor(255);
@@ -235,10 +238,11 @@ void ofApp::drawSceneVideo(int side){
 		
 	}else{ //right eye
 
-		texture1.bind();
+	texture1.bind();
 	ofFill();
 	//ofSetColor(255);
 	ofDrawBox(0,0,0,108,100, 0);
+	//ofDrawSphere(0,0,1080);
 	texture1.unbind();
 		
 	}	
@@ -279,7 +283,8 @@ void ofApp::drawSceneImage(){ //not used, aka, delete me!
 	texture1.bind();
 	ofFill();
 	//ofSetColor(255);
-	ofDrawBox(0,0,0,planeSize,planeSize, 0);
+	//ofDrawBox(0,0,0,planeSize,planeSize, 0);
+	ofDrawSphere(100,100,100);
 	texture1.unbind();
 	
 	
@@ -337,12 +342,26 @@ void ofApp::drawMesh(){
             ofColor c = ofLogo.getColor(x, y);
             float intensity = c.getLightness();
             if (intensity >= intensityThreshold) {
-                ofVec3f pos(x, y, x);
+                ofVec3f pos(x, y, 0);
                 mesh.addVertex(pos);
-                mesh.addColor(c);
+                mesh.addTexCoord(pos);
+                mesh.addColor(ofFloatColor(100,100,100));
             }
         }
     }
+
+     for (int y = 0; y<h-1; y++){
+                for (int x=0; x<w-1; x++){
+                        mesh.addIndex(x+y*w);                           // 0
+                        mesh.addIndex((x+1)+y*w);                       // 1
+                        mesh.addIndex(x+(y+1)*w);                       // 10
+
+                        mesh.addIndex((x+1)+y*w);                       // 1
+                        mesh.addIndex((x+1)+(y+1)*w);           // 11
+                        mesh.addIndex(x+(y+1)*w);                       // 10
+                }
+        }
+
 }
 
 //--------------------------------------------------------------
