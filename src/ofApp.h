@@ -19,8 +19,8 @@
 #include "ofxEchoCancel.h"
 #endif
 
-#define STATIC_IMAGE 0
-#define VIDEO 1
+#define STATIC_IMAGE 1
+#define VIDEO 0
 
 #define OCULUS_YAH 1
 
@@ -63,6 +63,12 @@ class ofApp : public ofBaseApp{
 		void drawMesh();
 		void createMeshWithTexture(ofTexture& texture);
 
+		void createSegmentedMesh(const ofVec3f& center,
+                                double radius,
+                                int precision,
+                                double theta1, double theta2,
+                                double phi1, double phi2);
+
 		ofxGstRTPClient client1, client2;
 		//ofxGstRTPServer server;
 
@@ -73,6 +79,11 @@ class ofApp : public ofBaseApp{
 
 		ofxOculusDK2		oculusRift;
 		ofEasyCam cam;		
+
+		double latMin, latMax;
+        double longMin, longMax;
+
+		double fov, ratio, precision, radius;
 #if DO_ECHO_CANCEL
 		ofxEchoCancel echoCancel;
 #endif

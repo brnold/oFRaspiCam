@@ -54,7 +54,7 @@ void ofApp::setup(){
 #endif
 
 #if STATIC_IMAGE //so Image
-
+	ofLogo.setUseTexture(true);
 	ofLogo.loadImage("photo.jpg");
 	w = (int)ofLogo.getWidth();
 	h = (int)ofLogo.getHeight();
@@ -127,6 +127,15 @@ void ofApp::setup(){
 //createMeshWithTexture(texture1);
 //drawMesh();
 
+	ratio = 3 / (double) 4;
+	fov = 200;
+	precision = 2000;
+	radius = 5000;
+
+	// generate segment
+	this->createSegmentedMesh(ofVec3f(0,0,0), radius, precision, longMin, longMax, latMin, latMax);
+
+
 
 }
 
@@ -198,7 +207,9 @@ void ofApp::draw(){
 }
 
 void ofApp::drawSceneVideo(int side){
-	//ofBackground(74, 88, 150);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_FRONT);
+	
 
 
     ofPushMatrix();
@@ -215,7 +226,7 @@ void ofApp::drawSceneVideo(int side){
 		0,
 		0);
 	
-	float planeSize = 9000;
+	//float planeSize = 9000;
 	
 	
 	ofTranslate(pos);
@@ -226,11 +237,11 @@ void ofApp::drawSceneVideo(int side){
 	ofEnableDepthTest();
 
 	if(side == 0){ // left eye
-		texture1.bind();
-		ofFill();
-		//mesh.draw();
-		ofDrawSphere(0,0,1080);
-		texture1.unbind();
+		ofLogo.bind();
+	//ofFill();
+		mesh.draw();
+		//ofDrawSphere(0,0,1080);
+		ofLogo.unbind();
 
 		//ofSetColor(255);
 		//ofDrawSphere(0,0,0,planeSize);
@@ -246,14 +257,15 @@ void ofApp::drawSceneVideo(int side){
 	texture1.unbind();
 		
 	}	
+	glDisable(GL_CULL_FACE);
+	ofDisableAlphaBlending();
+
 	ofDisableDepthTest();	
-	//ofNoFill();
-	//ofSetColor(ofColor::fromHsb(sinf(t) * 128 + 128, 255, 255));
-	//ofDrawBox(planeSize * 1.1f);
+
 	
 	ofPopMatrix();
 }
-
+/*
 void ofApp::drawSceneImage(){ //not used, aka, delete me!
 
 	
@@ -296,8 +308,8 @@ void ofApp::drawSceneImage(){ //not used, aka, delete me!
 	ofPopMatrix();
 
 	
-}
-
+}*/
+/*
 void ofApp::createMeshWithTexture(ofTexture& texture){
 	
 	//ofSpherePrimitive p = ofSpherePrimitive(100.0,100);
@@ -313,7 +325,7 @@ void ofApp::createMeshWithTexture(ofTexture& texture){
 	}
 	ofLog(OF_LOG_VERBOSE, "aaaaaaaaaaaaaaaaaaaaaa" + ofToString(mesh.getNumVertices()));
 	
-}
+}*/
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
@@ -330,6 +342,71 @@ void ofApp::keyPressed(int key){
 	}
 }
 
+void ofApp::createSegmentedMesh(const ofVec3f& center,
+                                double radius,
+                                int precision,
+                                double theta1, double theta2,
+                                double phi1, double phi2)
+{
+    /*
+     Create a sphere centered at c, with radius r, and precision n
+     Draw a point for zero radius spheres
+     Use CCW facet ordering
+     Partial spheres can be created using theta1->theta2, phi1->phi2
+     in radians 0 < theta < 2pi, -pi/2 < phi < pi/2
+     */
+    int i,j;
+    double t1,t2,t3;
+    ofVec3f e,p;
+    
+    mesh.clear();
+
+	/* Handle special cases */
+    if (radius < 0)
+        radius = -radius;
+    if (precision < 0)
+        precision = -precision;
+    if (precision < 4 || radius <= 0) {
+        mesh.addVertex(center);
+        return;
+    }
+    
+    for (j=0;j<precision/2;j++) {
+        t1 = phi1 + j * (phi2 - phi1) / (precision/2);
+        t2 = phi1 + (j + 1) * (phi2 - phi1) / (precision/2);
+
+        mesh.setMode(OF_PRIMITIVE_POINTS);
+        
+        for (i=0;i<=precision;i++) {
+            t3 = theta1 + i * (theta2 - theta1) / precision;
+            
+            e.x = cos(t1) * cos(t3);
+            e.y = sin(t1);
+            e.z = cos(t1) * sin(t3);
+            p.x = center.x + radius * e.x;
+            p.y = center.y + radius * e.y;
+            p.z = center.z + radius * e.z;
+            mesh.addNormal(e);
+            mesh.addTexCoord(ofVec2f( (i/(double)precision) * ofLogo.getWidth(),
+                                      ofLogo.getHeight() - (2*j/(double)precision) * ofLogo.getHeight()));
+            mesh.addVertex(p);
+            
+            e.x = cos(t2) * cos(t3);
+            e.y = sin(t2);
+            e.z = cos(t2) * sin(t3);
+            p.x = center.x + radius * e.x;
+            p.y = center.y + radius * e.y;
+            p.z = center.z + radius * e.z;
+            mesh.addNormal(e);
+            mesh.addTexCoord(ofVec2f( (i/(double)precision) * ofLogo.getWidth(),
+                                      ofLogo.getHeight() - (2*(j+1)/(double)precision) * ofLogo.getHeight()));
+            mesh.addVertex(p);
+		}
+    }
+}
+
+
+/*
 void ofApp::drawMesh(){
 
     mesh.setMode(OF_PRIMITIVE_POINTS);
@@ -362,7 +439,7 @@ void ofApp::drawMesh(){
                 }
         }
 
-}
+}*/
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
